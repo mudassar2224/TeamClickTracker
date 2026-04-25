@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - TeamClickTracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 420px;
+            padding: 48px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .header h1 {
+            color: #222;
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #222;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.25s;
+            font-family: inherit;
+            background: #fafafa;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.08);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+        }
+
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .forgot-password:hover {
+            color: #5568d3;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: none;
+            line-height: 1.6;
+            border-left: 4px solid;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background-color: #fff5f5;
+            color: #c92a2a;
+            border-left-color: #ff6b6b;
+        }
+
+        .message.success {
+            background-color: #f1fce4;
+            color: #2f7d32;
+            border-left-color: #51cf66;
+        }
+
+        .message.info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border-left-color: #90caf9;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #5568d3;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 24px 0;
+        }
+
+        .admin-note {
+            background: #f0f4ff;
+            border: 1px solid #d0e0ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 24px;
+            font-size: 12px;
+            color: #667eea;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TeamClickTracker</h1>
+            <p>Sign In to Your Account</p>
+        </div>
+
+        <div id="errorMsg" class="message error"></div>
+        <div id="infoMsg" class="message info"></div>
+
+        <div class="admin-note">
+            <strong>Testing?</strong> Use admin account:<br>
+            Email: mudassar.admin@gmail.com<br>
+            Password: Mudassar@123<br>
+        </div>
+
+        <form id="signinForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    placeholder="your@email.com" 
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="••••••••" 
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rememberMe">
+                    Remember me
+                </label>
+                <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Sign In
+            </button>
+        </form>
+
+        <div class="divider"></div>
+
+        <div class="footer">
+            Don't have an account? <a href="signup.html">Create Account</a>
+        </div>
+    </div>
+
+    <script>
+        // Form submission handler
+        document.getElementById('signinForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMeInput = document.getElementById('rememberMe');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMsg');
+
+            function showError(message) {
+                errorMsg.textContent = message;
+                errorMsg.classList.add('show');
+                setTimeout(() => {
+                    errorMsg.classList.remove('show');
+                }, 8000);
+            }
+
+            console.log('Form submitted with email:', email);
+
+            if (!email || !password) {
+                showError('Please enter both email and password');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+
+            try {
+                console.log('Attempting backend sign in...');
+                
+                // Call backend signin API
+                const response = await fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Backend response:', data);
+
+                if (!response.ok) {
+                    console.error('Sign in failed:', data.error);
+                    showError(data.error || 'Sign in failed');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                    return;
+                }
+
+                if (!data.success) {
+                    showError(data.error || 'Sign in failed');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                    return;
+                }
+
+                // Save token and user info to localStorage
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                console.log('Sign in successful:', data.user);
+
+                // Save remember me
+                if (rememberMeInput.checked) {
+                    localStorage.setItem('rememberMe', 'true');
+                    localStorage.setItem('lastEmail', email);
+                } else {
+                    localStorage.removeItem('rememberMe');
+                    localStorage.removeItem('lastEmail');
+                }
+
+                // Redirect based on role
+                if (data.user.role === 'admin') {
+                    console.log('Admin login detected, redirecting...');
+                    setTimeout(() => {
+                        window.location.href = '/frontend/admin_dashboard.html';
+                    }, 500);
+                } else if (data.user.role === 'member' && data.user.status === 'approved') {
+                    console.log('✅ Approved member login detected, redirecting to member dashboard...');
+                    console.log('✅ Member:', data.user.email, 'Status:', data.user.status);
+                    setTimeout(() => {
+                        window.location.href = '/frontend/member_dashboard.html';
+                    }, 300);  // Reduced delay
+                } else if (data.user.role === 'member' && data.user.status === 'pending') {
+                    console.log('⏳ Member pending approval');
+                    showError('Your account is pending admin approval. Please check back later.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                } else if (data.user.status === 'rejected') {
+                    console.log('Member rejected');
+                    showError('Your account has been rejected. Please contact admin for details.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                }
+
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showError('Sign in failed: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+
+            // Clear error on input
+            document.getElementById('email').addEventListener('input', () => {
+                errorMsg.classList.remove('show');
+            });
+            document.getElementById('password').addEventListener('input', () => {
+                errorMsg.classList.remove('show');
+            });
+        });
+
+        // Handle forgot password
+        window.handleForgotPassword = function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const infoMsg = document.getElementById('infoMsg');
+
+            if (!email) {
+                alert('Please enter your email address first');
+                return;
+            }
+
+            infoMsg.textContent = 'Password reset email feature coming soon. Please contact admin for help.';
+            infoMsg.classList.add('show');
+            setTimeout(() => {
+                infoMsg.classList.remove('show');
+            }, 6000);
+        };
+
+        // Restore "remember me" on page load
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('rememberMe') === 'true') {
+                document.getElementById('rememberMe').checked = true;
+                const savedEmail = localStorage.getItem('lastEmail');
+                if (savedEmail) {
+                    document.getElementById('email').value = savedEmail;
+                }
+            }
+        });
+
+        console.log('Sign in page loaded successfully (Backend API Mode)');
+    </script>
+</body>
+</html>

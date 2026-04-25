@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTM Generator - TeamClickTracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .utm-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .utm-header {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: white;
+        }
+
+        .utm-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .utm-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-generate {
+            flex: 1;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-generate:hover {
+            background: #764ba2;
+        }
+
+        .btn-back {
+            padding: 15px 30px;
+            background: #f0f0f0;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .utm-links-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .utm-links-box h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .utm-link-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .utm-link-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .utm-link-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .utm-link-created {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .utm-link-url {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+            word-break: break-all;
+            margin-bottom: 10px;
+            font-family: monospace;
+            border: 1px solid #e0e0e0;
+        }
+
+        .utm-link-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            flex: 1;
+            padding: 8px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-copy:hover {
+            background: #764ba2;
+        }
+
+        .btn-delete {
+            flex: 1;
+            padding: 8px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #cc5555;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            white-space: pre-line;
+        }
+
+        .help-text {
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .utm-link-destination {
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .no-links {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+
+        .controls {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="utm-container">
+        <div class="controls">
+            <button class="btn-back" onclick="window.history.back()">← Back</button>
+        </div>
+
+        <div class="utm-header">
+            <h1>🔗 UTM Link Generator</h1>
+            <p>Create tracking links to monitor your article shares</p>
+        </div>
+
+        <div class="utm-box">
+            <div class="success-message" id="successMessage"></div>
+
+            <form onsubmit="createUTMLink(event)">
+                <div class="form-group">
+                    <label for="destinationUrls">Destination URL(s) *</label>
+                    <textarea id="destinationUrls" placeholder="Paste one or more URLs (one per line)\nExample:\nhttps://captionmood.com/\nhttps://captionmood.com/some-article" required></textarea>
+                    <div class="help-text">
+                        One URL per line. GA tracking will only appear if the destination website is tracked by your GA4 property.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="campaignName">Campaign Name *</label>
+                    <input type="text" id="campaignName" placeholder="e.g., Winter Sale, Product Launch" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="medium">Medium *</label>
+                        <select id="medium" required>
+                            <option value="social">Social Media</option>
+                            <option value="email">Email</option>
+                            <option value="direct">Direct</option>
+                            <option value="organic">Organic</option>
+                            <option value="paid">Paid Ads</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="source">Source</label>
+                        <input type="text" id="source" value="captionmood" placeholder="Source">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Additional Content (Optional)</label>
+                    <input type="text" id="content" placeholder="e.g., pinterest, instagram, fb_group">
+                </div>
+
+                <div class="form-actions">
+                    <button id="generateBtn" type="submit" class="btn-generate">✨ Generate UTM Link</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="utm-links-box">
+            <h2>📊 Your UTM Links</h2>
+            <div id="loadingIndicator" class="loading" style="display: none;">Loading your links...</div>
+            <div id="linksContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let userLinks = [];
+        let selectedArticle = null;
+
+        // Check authentication
+        window.addEventListener('load', async () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'signin.html';
+                return;
+            }
+            await loadSelectedArticleIfAny();
+            loadUTMLinks();
+        });
+
+        function getQueryParam(name) {
+            try {
+                return new URLSearchParams(window.location.search).get(name);
+            } catch {
+                return null;
+            }
+        }
+
+        async function loadSelectedArticleIfAny() {
+            const articleId = getQueryParam('article') || localStorage.getItem('selectedArticleId');
+            if (!articleId) return;
+
+            // Try localStorage first (fast path)
+            const cachedUrl = localStorage.getItem('selectedArticleUrl');
+            const cachedTitle = localStorage.getItem('selectedArticleTitle');
+
+            if (cachedUrl) {
+                selectedArticle = {
+                    id: articleId,
+                    title: cachedTitle || 'Selected Article',
+                    url: cachedUrl
+                };
+                document.getElementById('destinationUrls').value = cachedUrl;
+            }
+
+            // Fetch from API for the most accurate URL/title
+            const response = await apiCall(`/api/member/articles/${encodeURIComponent(articleId)}`);
+            if (response && response.success && response.article) {
+                selectedArticle = response.article;
+                if (response.article.url) {
+                    document.getElementById('destinationUrls').value = response.article.url;
+                }
+                if (!document.getElementById('campaignName').value && response.article.title) {
+                    // Helpful default, user can change
+                    document.getElementById('campaignName').value = response.article.title.slice(0, 60);
+                }
+                showMessage(`✅ Loaded article:\n${response.article.title}`, 'success');
+            } else {
+                showMessage('⚠️ Could not load the selected article. You can still paste a URL manually.', 'error');
+            }
+
+            // Clear cached selection so normal UTM generation doesn't keep reusing old article data
+            localStorage.removeItem('selectedArticleId');
+            localStorage.removeItem('selectedArticleTitle');
+            localStorage.removeItem('selectedArticleUrl');
+        }
+
+        // API call helper
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('authToken');
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'signin.html';
+                    return { success: false };
+                }
+
+                return data;
+            } catch (error) {
+                console.error(`API Error (${endpoint}):`, error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        function showMessage(text, type = 'success') {
+            const el = document.getElementById('successMessage');
+            el.style.display = 'block';
+            if (type === 'error') {
+                el.style.background = '#f8d7da';
+                el.style.color = '#721c24';
+            } else {
+                el.style.background = '#d4edda';
+                el.style.color = '#155724';
+            }
+            el.textContent = text;
+        }
+
+        function normalizeUrlLine(line) {
+            let trimmed = String(line || '').trim();
+            if (!trimmed) return null;
+
+            // Common paste mistake: leaving a default URL in the box and pasting a full URL after it.
+            // Example: "https://captionmood.com/https://captionmood.com/post".
+            const idx = trimmed.search(/\/https?:\/\//i);
+            if (idx > 0) {
+                trimmed = trimmed.slice(idx + 1);
+            }
+
+            if (/^https?:\/\//i.test(trimmed)) return trimmed;
+            return `https://${trimmed}`;
+        }
+
+        function isValidHttpUrl(url) {
+            try {
+                const u = new URL(url);
+                if (u.protocol !== 'http:' && u.protocol !== 'https:') return false;
+
+                // Catch concatenated URLs that still parse, e.g. https://captionmood.com/https://captionmood.com/post
+                if (/https?:\/\//i.test(u.pathname)) return false;
+
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        // Create UTM link
+        async function createUTMLink(event) {
+            event.preventDefault();
+
+            const rawUrls = document.getElementById('destinationUrls').value;
+            const rawLines = rawUrls.split(/\r?\n/).map(l => String(l || '').trim()).filter(Boolean);
+
+            if (rawLines.length === 0) {
+                showMessage('❌ Please enter at least one destination URL.', 'error');
+                return;
+            }
+
+            if (rawLines.length > 50) {
+                showMessage('❌ Please generate at most 50 URLs at a time.', 'error');
+                return;
+            }
+
+            const campaignName = document.getElementById('campaignName').value;
+            const medium = document.getElementById('medium').value;
+            const source = document.getElementById('source').value;
+            const content = document.getElementById('content').value;
+
+            const invalid = [];
+            const normalizedUrls = [];
+            for (const line of rawLines) {
+                const normalized = normalizeUrlLine(line);
+                if (!normalized || !isValidHttpUrl(normalized)) {
+                    invalid.push(line);
+                    continue;
+                }
+                normalizedUrls.push(normalized);
+            }
+
+            if (invalid.length > 0) {
+                const preview = invalid.slice(0, 5).map(u => `- ${u}`).join('\n');
+                const more = invalid.length > 5 ? `\n...and ${invalid.length - 5} more` : '';
+                showMessage(`❌ Invalid URL(s):\n${preview}${more}`, 'error');
+                return;
+            }
+
+            const urls = Array.from(new Set(normalizedUrls));
+
+            const btn = document.getElementById('generateBtn');
+            const originalBtnText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = urls.length > 1 ? `✨ Generating ${urls.length} links...` : '✨ Generating...';
+
+            let created = 0;
+            const failures = [];
+
+            for (const destinationUrl of urls) {
+                const payload = {
+                    campaignName,
+                    medium,
+                    source,
+                    content,
+                    destinationUrl
+                };
+
+                // If this was launched from a specific article, attach the title for nicer display in dashboards.
+                if (selectedArticle && selectedArticle.title && selectedArticle.url && destinationUrl === selectedArticle.url) {
+                    payload.articleTitle = selectedArticle.title;
+                }
+
+                const response = await apiCall('/api/member/create-utm', 'POST', {
+                    ...payload
+                });
+
+                if (response && response.success) {
+                    created += 1;
+                } else {
+                    failures.push({
+                        destinationUrl,
+                        error: response?.message || response?.error || 'Failed to create UTM link'
+                    });
+                }
+            }
+
+            btn.disabled = false;
+            btn.textContent = originalBtnText;
+
+            if (created > 0) {
+                const lines = [`✅ Created ${created} tracking link(s).`];
+                if (failures.length > 0) {
+                    lines.push(`\n⚠️ Failed: ${failures.length}`);
+                    failures.slice(0, 3).forEach(f => lines.push(`- ${f.destinationUrl} (${f.error})`));
+                    if (failures.length > 3) {
+                        lines.push(`...and ${failures.length - 3} more`);
+                    }
+                }
+                showMessage(lines.join('\n'), failures.length > 0 ? 'error' : 'success');
+
+                // Reload links
+                loadUTMLinks();
+            } else {
+                const preview = failures.slice(0, 3).map(f => `- ${f.destinationUrl} (${f.error})`).join('\n');
+                showMessage(`❌ No links were created.\n${preview}`, 'error');
+            }
+        }
+
+        // Load UTM links
+        async function loadUTMLinks() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            const response = await apiCall('/api/member/utm-links');
+
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+            if (response.success && response.links) {
+                userLinks = response.links;
+                displayLinks();
+            }
+        }
+
+        // Display links
+        function displayLinks() {
+            const container = document.getElementById('linksContainer');
+            container.innerHTML = '';
+
+            if (userLinks.length === 0) {
+                container.innerHTML = '<div class="no-links">No UTM links yet. Create your first one above!</div>';
+                return;
+            }
+
+            const parseCreatedAtMs = (value) => {
+                const ms = Date.parse(value);
+                return Number.isFinite(ms) ? ms : 0;
+            };
+
+            const sortedLinks = [...userLinks].sort((a, b) => {
+                const diff = parseCreatedAtMs(b.createdAt) - parseCreatedAtMs(a.createdAt);
+                if (diff !== 0) return diff;
+                return String(b.id || '').localeCompare(String(a.id || ''));
+            });
+
+            sortedLinks.forEach(link => {
+                const linkDiv = document.createElement('div');
+                linkDiv.className = 'utm-link-item';
+
+                const header = document.createElement('div');
+                header.className = 'utm-link-header';
+
+                const name = document.createElement('div');
+                name.className = 'utm-link-name';
+                name.textContent = link.campaignName || 'Campaign';
+
+                const created = document.createElement('div');
+                created.className = 'utm-link-created';
+                created.textContent = link.createdAt ? `Created: ${new Date(link.createdAt).toLocaleString()}` : '';
+
+                header.appendChild(name);
+                header.appendChild(created);
+
+                const destination = document.createElement('div');
+                destination.className = 'utm-link-destination';
+                if (link.articleUrl) {
+                    destination.textContent = `Destination: ${link.articleUrl}`;
+                } else if (link.articleTitle) {
+                    destination.textContent = link.articleTitle;
+                } else {
+                    destination.style.display = 'none';
+                }
+
+                const urlDiv = document.createElement('div');
+                urlDiv.className = 'utm-link-url';
+                urlDiv.textContent = link.url || '';
+
+                const actions = document.createElement('div');
+                actions.className = 'utm-link-actions';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.type = 'button';
+                copyBtn.className = 'btn-copy';
+                copyBtn.textContent = '📋 Copy Link';
+                copyBtn.addEventListener('click', () => copyToClipboard(link.url));
+
+                const shareBtn = document.createElement('button');
+                shareBtn.type = 'button';
+                shareBtn.className = 'btn-copy';
+                shareBtn.style.background = '#28a745';
+                shareBtn.textContent = '📤 Share';
+                shareBtn.addEventListener('click', () => shareLink(link.url));
+
+                actions.appendChild(copyBtn);
+                actions.appendChild(shareBtn);
+
+                linkDiv.appendChild(header);
+                linkDiv.appendChild(destination);
+                linkDiv.appendChild(urlDiv);
+                linkDiv.appendChild(actions);
+
+                container.appendChild(linkDiv);
+            });
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            if (!text) {
+                showMessage('❌ No URL to copy.', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Share link
+        function shareLink(url) {
+            if (!url) {
+                showMessage('❌ No URL to share.', 'error');
+                return;
+            }
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this article',
+                    text: 'I found this interesting article on CaptionMood',
+                    url: url
+                });
+            } else {
+                copyToClipboard(url);
+            }
+        }
+    </script>
+</body>
+</html>

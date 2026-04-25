@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - TeamClickTracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .profile-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .profile-header {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: white;
+        }
+
+        .profile-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .profile-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-section {
+            margin-bottom: 30px;
+        }
+
+        .profile-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .profile-info {
+            margin-bottom: 15px;
+        }
+
+        .profile-label {
+            font-weight: bold;
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .profile-value {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:disabled {
+            background: #f9f9f9;
+            color: #999;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+
+        .btn-back {
+            padding: 12px 30px;
+            background: #f0f0f0;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .controls {
+            max-width: 600px;
+            margin: 0 auto 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="controls">
+            <button class="btn-back" onclick="window.history.back()">← Back</button>
+        </div>
+
+        <div class="profile-header">
+            <h1>👤 My Profile</h1>
+            <p>Manage your account information and payment details</p>
+        </div>
+
+        <div class="profile-box">
+            <div id="loadingIndicator" class="loading" style="display: none;">Loading profile...</div>
+            <div class="success-message" id="successMessage"></div>
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Account Information (Read Only) -->
+            <div class="profile-section">
+                <h2>Account Information</h2>
+                <div class="profile-info">
+                    <div class="profile-label">Email</div>
+                    <div class="profile-value" id="profileEmail">-</div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-label">Status</div>
+                    <div class="profile-value">
+                        <span class="status-badge" id="statusBadge">-</span>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-label">Member Since</div>
+                    <div class="profile-value" id="joinDate">-</div>
+                </div>
+                <div class="profile-info" id="approvalDateDiv" style="display: none;">
+                    <div class="profile-label">Approved On</div>
+                    <div class="profile-value" id="approvalDate">-</div>
+                </div>
+            </div>
+
+            <!-- Editable Information -->
+            <div class="profile-section">
+                <h2>Personal Information</h2>
+                <form onsubmit="updateProfile(event)">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Bio (Optional)</label>
+                        <textarea id="notes" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">💾 Save Changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="profile-section">
+                <h2>Payment Details</h2>
+                <form onsubmit="updatePaymentInfo(event)">
+                    <div class="form-group">
+                        <label for="accountHolder">Account Holder Name</label>
+                        <input type="text" id="accountHolder" placeholder="Full name for bank account">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bank">Bank/Payment Method</label>
+                        <input type="text" id="bank" placeholder="e.g., Bank Name or Payment App">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bankDetails">Account Details (Optional)</label>
+                        <textarea id="bankDetails" placeholder="Account number and other details (will be encrypted)"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">💳 Update Payment Info</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let profileData = {};
+
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'signin.html';
+                return;
+            }
+            loadProfile();
+        });
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('authToken');
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'signin.html';
+                    return { success: false };
+                }
+
+                return data;
+            } catch (error) {
+                console.error(`API Error (${endpoint}):`, error);
+                return { success: false };
+            }
+        }
+
+        async function loadProfile() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            const response = await apiCall('/api/member/profile');
+
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+            if (response.success && response.profile) {
+                profileData = response.profile;
+                displayProfile();
+            }
+        }
+
+        function displayProfile() {
+            // Display read-only info
+            document.getElementById('profileEmail').textContent = profileData.email;
+            
+            // Status badge
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.textContent = (profileData.status || 'pending').toUpperCase();
+            statusBadge.className = `status-badge status-${profileData.status || 'pending'}`;
+            
+            // Dates
+            if (profileData.joinDate) {
+                document.getElementById('joinDate').textContent = new Date(profileData.joinDate).toLocaleDateString();
+            }
+            
+            if (profileData.approvalDate) {
+                document.getElementById('approvalDateDiv').style.display = 'block';
+                document.getElementById('approvalDate').textContent = new Date(profileData.approvalDate).toLocaleDateString();
+            }
+
+            // Populate editable fields
+            document.getElementById('name').value = profileData.name || '';
+            document.getElementById('notes').value = profileData.notes || '';
+            document.getElementById('accountHolder').value = profileData.accountHolder || '';
+            document.getElementById('bank').value = profileData.bank || '';
+        }
+
+        async function updateProfile(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const notes = document.getElementById('notes').value;
+
+            const response = await apiCall('/api/member/profile', 'PUT', { name, notes });
+
+            if (response.success) {
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('successMessage').textContent = '✅ Profile updated successfully!';
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+                loadProfile();
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = '❌ Failed to update profile';
+            }
+        }
+
+        async function updatePaymentInfo(event) {
+            event.preventDefault();
+
+            const accountHolder = document.getElementById('accountHolder').value;
+            const bank = document.getElementById('bank').value;
+
+            const response = await apiCall('/api/member/profile', 'PUT', { accountHolder, bank });
+
+            if (response.success) {
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('successMessage').textContent = '✅ Payment information updated successfully!';
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+                loadProfile();
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = '❌ Failed to update payment information';
+            }
+        }
+    </script>
+</body>
+</html>

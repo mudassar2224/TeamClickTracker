@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - TeamClickTracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #eee;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .stat-subtext {
+            color: #999;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-header {
+            background: #f8f9fa;
+            padding: 16px 24px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #f0f4ff;
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #222;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .message {
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            border-left: 4px solid;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left-color: #51cf66;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left-color: #ff6b6b;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #222;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #222;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .utm-url {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-bottom: 12px;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 10px;
+            background: #51cf66;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #37b24d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 8px;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Member Dashboard</h1>
+        <div class="header-info">
+            <div id="memberEmail"></div>
+            <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Messages -->
+        <div id="successMsg" class="message success"></div>
+        <div id="errorMsg" class="message error"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="goToPage('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="goToPage('articles')">📰 Articles</button>
+            <button class="tab-btn" onclick="goToPage('utm-generator')">🔗 Create UTM</button>
+            <button class="tab-btn" onclick="goToPage('statistics')">📈 Statistics</button>
+            <button class="tab-btn" onclick="goToPage('payments')">💰 Payments</button>
+            <button class="tab-btn" onclick="goToPage('profile')">👤 Profile</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Earned</div>
+                    <div class="stat-value" id="totalEarned">$0.00</div>
+                    <div class="stat-subtext">All time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">This Week</div>
+                    <div class="stat-value" id="weekEarnings">$0.00</div>
+                    <div class="stat-subtext">Last 7 days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">This Month</div>
+                    <div class="stat-value" id="monthEarnings">$0.00</div>
+                    <div class="stat-subtext">Last 30 days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Available Balance</div>
+                    <div class="stat-value" id="availableBalance">$0.00</div>
+                    <div class="stat-subtext">Ready to withdraw</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Recent Activity</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Event</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityList">
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <h3>No activity yet</h3>
+                                <p>Create your first UTM link to get started</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Articles Tab -->
+        <div id="articles" class="tab-content">
+            <div class="filter-row">
+                <select id="categoryFilter" onchange="filterArticles()">
+                    <option value="">All Categories</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Search articles..." onkeyup="filterArticles()">
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Available Articles</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Your Clicks</th>
+                            <th>Your Earnings</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articlesList">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <h3>Loading articles...</h3>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="statistics" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Clicks</div>
+                    <div class="stat-value" id="totalClicks">0</div>
+                    <div class="stat-subtext">All time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Average RPM</div>
+                    <div class="stat-value" id="avgRPM">$0.00</div>
+                    <div class="stat-subtext">Per 1000 clicks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Conversion Rate</div>
+                    <div class="stat-value" id="conversionRate">0%</div>
+                    <div class="stat-subtext">Clicks to earnings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Top Article</div>
+                    <div class="stat-value" id="topArticle">--</div>
+                    <div class="stat-subtext">By clicks</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Performance by Article</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Article</th>
+                            <th>Clicks</th>
+                            <th>Earnings</th>
+                            <th>CTR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="performanceList">
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <h3>No data yet</h3>
+                                <p>Start sharing articles to see statistics</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div id="payments" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Pending Withdrawals</h3>
+                    <button class="btn btn-primary btn-small" onclick="openPayoutModal()">Request Payout</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Requested</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingPayouts">
+                        <tr>
+                            <td colspan="3" class="empty-state">
+                                <h3>No pending requests</h3>
+                                <p>Your completed payouts will appear here</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Payment History</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Date Paid</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentHistory">
+                        <tr>
+                            <td colspan="3" class="empty-state">
+                                <h3>No payment history</h3>
+                                <p>Completed payments will appear here</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- UTM Link Modal -->
+    <div id="utmModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeUTMModal()">×</button>
+            <div class="modal-header">Generate UTM Link</div>
+            
+            <div class="form-group">
+                <label>Article Title</label>
+                <input type="text" id="articleTitle" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Campaign Name</label>
+                <input type="text" id="campaignName" placeholder="e.g., hairstyle-tips" required>
+            </div>
+
+            <div class="form-group">
+                <label>Medium</label>
+                <select id="mediumSelect" required>
+                    <option value="">Select medium</option>
+                    <option value="social">Social Media</option>
+                    <option value="email">Email</option>
+                    <option value="direct">Direct</option>
+                    <option value="organic">Organic Search</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Your Tracking URL</label>
+                <div class="utm-url" id="utmUrl">URL will appear here</div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 12px;" onclick="createUTMLink()">Generate Link</button>
+            <button class="copy-btn" onclick="copyToClipboard()">Copy URL to Clipboard</button>
+        </div>
+    </div>
+
+    <!-- Payout Modal -->
+    <div id="payoutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePayoutModal()">×</button>
+            <div class="modal-header">Request Payout</div>
+            
+            <div class="form-group">
+                <label>Available Balance</label>
+                <input type="text" id="payoutBalance" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Amount to Withdraw</label>
+                <input type="number" id="payoutAmount" placeholder="Enter amount" min="10" step="0.01" required>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%;" onclick="submitPayout()">Request Payout</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // MEMBER DASHBOARD - BACKEND API VERSION
+        // ============================================
+
+        let memberData = null;
+        let allArticles = [];
+        let allUTMLinks = [];
+        let currentArticleForUTM = null;
+
+        /**
+         * NAVIGATION - Go to different pages
+         */
+        function goToPage(page) {
+            const pages = {
+                'dashboard': '/frontend/member_dashboard.html',
+                'articles': '/frontend/articles.html',
+                'utm-generator': '/frontend/utm-generator.html',
+                'statistics': '/frontend/statistics.html',
+                'payments': '/frontend/payments.html',
+                'profile': '/frontend/profile.html'
+            };
+            
+            if (pages[page]) {
+                window.location.href = pages[page];
+            }
+        }
+
+        /**
+         * INITIALIZATION
+         */
+        window.addEventListener('load', async () => {
+            // Check authentication and load data
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                console.log('❌ No token found in localStorage');
+                showError('No session found. Please login again.');
+                setTimeout(() => window.location.href = 'signin.html', 2000);
+                return;
+            }
+
+            try {
+                console.log('✅ Token found, fetching member data...');
+                
+                // Verify token is valid and fetch member data
+                const response = await apiCall('/api/member/dashboard', 'GET');
+                
+                console.log('Dashboard API response:', response);
+
+                if (!response.success) {
+                    console.error('❌ Dashboard verification failed:', response.error);
+                    
+                    // Check if it's an approval issue
+                    if (response.error && response.error.includes('approved')) {
+                        showError('Your account is pending approval. Please check back after admin approval.');
+                    } else if (response.error && response.error.includes('token')) {
+                        showError('Session expired. Please login again.');
+                    } else {
+                        showError(response.error || 'Failed to load dashboard.');
+                    }
+                    
+                    localStorage.removeItem('authToken');
+                    setTimeout(() => window.location.href = 'signin.html', 2500);
+                    return;
+                }
+
+                console.log('✅ Member data loaded:', response.dashboard);
+                memberData = response.dashboard;
+                document.getElementById('memberEmail').textContent = memberData.email || 'Member';
+                
+                // Load all data in parallel
+                await Promise.all([
+                    loadDashboardData(),
+                    loadArticles(),
+                    loadCategories(),
+                    loadUTMLinks(),
+                    loadStatistics()
+                ]);
+
+                showSuccess('Dashboard loaded successfully!');
+                
+                // ✨ START AUTO-REFRESH FOR REAL-TIME UPDATES
+                startAutoRefresh();
+            } catch (error) {
+                console.error('❌ Initialization error:', error);
+                showError('Failed to load dashboard. Please refresh or login again.');
+                setTimeout(() => window.location.href = 'signin.html', 2500);
+            }
+        });
+
+        /**
+         * AUTO-REFRESH - Update earnings and statistics every 10 seconds (REAL-TIME)
+         */
+        function startAutoRefresh() {
+            console.log('🔄 Starting auto-refresh (every 10 seconds)...');
+            
+            // Add "Last Updated" display to header
+            const headerInfo = document.querySelector('.header-info');
+            const lastUpdatedDiv = document.createElement('div');
+            lastUpdatedDiv.id = 'lastUpdated';
+            lastUpdatedDiv.style.color = 'rgba(255,255,255,0.8)';
+            lastUpdatedDiv.style.fontSize = '12px';
+            lastUpdatedDiv.textContent = 'Updating...';
+            headerInfo.insertBefore(lastUpdatedDiv, headerInfo.firstChild);
+            
+            // Update every 10 seconds
+            setInterval(async () => {
+                try {
+                    // Refresh earnings data
+                    await loadDashboardData();
+                    
+                    // Refresh statistics data
+                    await loadStatistics();
+                    
+                    // Update last updated timestamp
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString();
+                    document.getElementById('lastUpdated').textContent = `Last updated: ${timeString}`;
+                    
+                    console.log(`✅ [${timeString}] Data refreshed`);
+                } catch (error) {
+                    console.error('Auto-refresh error:', error);
+                }
+            }, 10000); // 10 seconds
+        }
+
+        /**
+         * API HELPER - Handle all backend API calls with logging
+         */
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('authToken');
+            
+            if (method !== 'GET' && !body) {
+                body = {};
+            }
+
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            // Always send authorization header if token exists
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+                console.log(`📤 Token found (${token.length} chars), attaching to Authorization header`);
+            } else {
+                console.warn('⚠️ No token found in localStorage!');
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                console.log(`📤 API Call: ${method} ${endpoint}`, { headers: options.headers });
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+
+                console.log(`📥 API Response: ${response.status} ${response.statusText}`, data);
+
+                if (response.status === 401) {
+                    console.error('❌ 401 Unauthorized - Invalid or expired token');
+                    showError('Session expired. Please login again.');
+                    localStorage.removeItem('authToken');
+                    setTimeout(() => window.location.href = 'signin.html', 2000);
+                    return { success: false, error: 'Unauthorized' };
+                }
+
+                if (response.status === 403) {
+                    console.error('❌ 403 Forbidden - User not approved or lacks permission');
+                    return data;
+                }
+
+                return data;
+            } catch (error) {
+                console.error(`❌ API call error (${endpoint}):`, error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        /**
+         * TAB SWITCHING
+         */
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Refresh data when switching tabs
+            if (tabName === 'statistics') {
+                loadStatistics();
+            } else if (tabName === 'articles') {
+                loadArticles();
+            }
+        }
+
+        /**
+         * DASHBOARD DATA
+         */
+        async function loadDashboardData() {
+            try {
+                const response = await apiCall('/api/member/earnings', 'GET');
+                
+                if (!response.success) {
+                    console.warn('No earnings data yet');
+                    return;
+                }
+
+                const earnings = response.earnings || {};
+                
+                document.getElementById('totalEarned').textContent = '$' + (earnings.totalEarned || 0).toFixed(2);
+                document.getElementById('weekEarnings').textContent = '$' + (earnings.thisWeek || 0).toFixed(2);
+                document.getElementById('monthEarnings').textContent = '$' + (earnings.thisMonth || 0).toFixed(2);
+                document.getElementById('availableBalance').textContent = '$' + (earnings.availableBalance || 0).toFixed(2);
+
+                // Load recent activity
+                loadRecentActivity(response.history || []);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        function loadRecentActivity(history) {
+            const tbody = document.getElementById('activityList');
+            
+            if (!history || history.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <h3>No activity yet</h3>
+                            <p>Create your first UTM link to get started</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            history.slice(0, 10).forEach(activity => {
+                const date = new Date(activity.date).toLocaleDateString();
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${activity.event || 'Earnings'}</td>
+                        <td>$${(activity.amount || 0).toFixed(2)}</td>
+                        <td><span class="category-badge">${activity.status || 'Pending'}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        /**
+         * ARTICLES
+         */
+        async function loadArticles() {
+            try {
+                const response = await apiCall('/api/member/articles', 'GET');
+                
+                if (!response.success || !response.articles) {
+                    showError('Failed to load articles');
+                    return;
+                }
+
+                allArticles = response.articles;
+                displayArticles(allArticles);
+            } catch (error) {
+                console.error('Error loading articles:', error);
+                showError('Failed to load articles');
+            }
+        }
+
+        function displayArticles(articles) {
+            const tbody = document.getElementById('articlesList');
+            
+            if (!articles || articles.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <h3>No articles yet</h3>
+                            <p>Articles will be available soon!</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            articles.forEach(article => {
+                const clicks = article.clicks || 0;
+                const earnings = article.earnings || 0;
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">
+                            ${article.title}
+                        </td>
+                        <td>
+                            <span class="category-badge">${article.category || 'Other'}</span>
+                        </td>
+                        <td>${clicks}</td>
+                        <td>$${earnings.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-primary btn-small" 
+                                    onclick="prepareUTMLink('${article.id || ''}', '${article.title.replace(/'/g, "\\'")}', '${article.url || ''}')">
+                                Create Link
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        /**
+         * CATEGORIES
+         */
+        async function loadCategories() {
+            try {
+                const response = await apiCall('/api/member/categories', 'GET');
+                
+                if (!response.success || !response.categories) {
+                    return;
+                }
+
+                const select = document.getElementById('categoryFilter');
+                select.innerHTML = '<option value="">All Categories</option>';
+                
+                response.categories.forEach(cat => {
+                    if (cat !== 'All') {
+                        const option = document.createElement('option');
+                        option.value = cat;
+                        option.textContent = cat;
+                        select.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        function filterArticles() {
+            const category = document.getElementById('categoryFilter').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = allArticles.filter(article => {
+                const matchCategory = !category || article.category === category;
+                const matchSearch = !search || article.title.toLowerCase().includes(search);
+                return matchCategory && matchSearch;
+            });
+
+            displayArticles(filtered);
+        }
+
+        /**
+         * UTM LINK GENERATION
+         */
+        function prepareUTMLink(articleId, title, url) {
+            currentArticleForUTM = { articleId, title, url };
+            document.getElementById('articleTitle').value = title;
+            document.getElementById('campaignName').value = '';
+            document.getElementById('mediumSelect').value = '';
+            document.getElementById('utmUrl').textContent = 'URL will appear here';
+            document.getElementById('utmModal').classList.add('show');
+        }
+
+        function closeUTMModal() {
+            document.getElementById('utmModal').classList.remove('show');
+            currentArticleForUTM = null;
+        }
+
+        async function createUTMLink() {
+            const campaignName = document.getElementById('campaignName').value.trim();
+            const medium = document.getElementById('mediumSelect').value;
+
+            if (!campaignName || !medium) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            if (!currentArticleForUTM) {
+                showError('No article selected');
+                return;
+            }
+
+            try {
+                const response = await apiCall('/api/member/create-utm-link', 'POST', {
+                    articleTitle: currentArticleForUTM.title,
+                    articleUrl: currentArticleForUTM.url,
+                    campaignName: campaignName,
+                    medium: medium
+                });
+
+                if (!response.success) {
+                    showError(response.error || 'Failed to create link');
+                    return;
+                }
+
+                const utmLink = response.link;
+                document.getElementById('utmUrl').textContent = utmLink.url;
+                showSuccess('Link created! Click copy to share.');
+                
+                // Refresh UTM links list
+                await loadUTMLinks();
+            } catch (error) {
+                console.error('Error creating UTM link:', error);
+                showError('Failed to create link');
+            }
+        }
+
+        function copyToClipboard() {
+            const url = document.getElementById('utmUrl').textContent;
+            if (url === 'URL will appear here') {
+                showError('Please create a link first');
+                return;
+            }
+            navigator.clipboard.writeText(url).then(() => {
+                showSuccess('URL copied to clipboard!');
+                setTimeout(() => closeUTMModal(), 1500);
+            }).catch(() => {
+                showError('Failed to copy to clipboard');
+            });
+        }
+
+        /**
+         * UTM LINKS
+         */
+        async function loadUTMLinks() {
+            try {
+                const response = await apiCall('/api/member/utm-links', 'GET');
+                
+                if (!response.success) {
+                    console.warn('No UTM links yet');
+                    return;
+                }
+
+                allUTMLinks = response.links || [];
+            } catch (error) {
+                console.error('Error loading UTM links:', error);
+            }
+        }
+
+        /**
+         * STATISTICS
+         */
+        async function loadStatistics() {
+            try {
+                const response = await apiCall('/api/member/statistics', 'GET');
+                
+                if (!response.success) {
+                    console.warn('No statistics yet');
+                    return;
+                }
+
+                const stats = response.stats || {};
+                
+                document.getElementById('totalClicks').textContent = (stats.totalClicks || 0).toString();
+                document.getElementById('avgRPM').textContent = '$' + (stats.averageRpm || 0).toFixed(2);
+                document.getElementById('conversionRate').textContent = (stats.conversionRate || 0).toFixed(1) + '%';
+                document.getElementById('topArticle').textContent = stats.topCampaign || '--';
+
+                // Display top campaigns
+                displayTopCampaigns(response.topCampaigns || []);
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        function displayTopCampaigns(campaigns) {
+            const tbody = document.getElementById('performanceList');
+            
+            if (!campaigns || campaigns.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <h3>No data yet</h3>
+                            <p>Start sharing articles to see statistics</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            campaigns.forEach(campaign => {
+                const clicks = campaign.clicks || 0;
+                const earnings = campaign.earnings || 0;
+                const ctr = campaign.ctr || 0;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${campaign.name}</td>
+                        <td>${clicks}</td>
+                        <td>$${earnings.toFixed(2)}</td>
+                        <td>${ctr.toFixed(2)}%</td>
+                    </tr>
+                `;
+            });
+        }
+
+        /**
+         * PAYOUTS
+         */
+        function openPayoutModal() {
+            const balance = document.getElementById('availableBalance').textContent;
+            document.getElementById('payoutBalance').value = balance;
+            document.getElementById('payoutAmount').value = '';
+            document.getElementById('payoutModal').classList.add('show');
+        }
+
+        function closePayoutModal() {
+            document.getElementById('payoutModal').classList.remove('show');
+        }
+
+        async function submitPayout() {
+            const amount = parseFloat(document.getElementById('payoutAmount').value);
+            const balance = parseFloat(document.getElementById('availableBalance').textContent.replace('$', ''));
+            
+            if (!amount || isNaN(amount)) {
+                showError('Please enter a valid amount');
+                return;
+            }
+
+            if (amount < 10) {
+                showError('Minimum payout is $10');
+                return;
+            }
+
+            if (amount > balance) {
+                showError('Insufficient balance');
+                return;
+            }
+
+            try {
+                showSuccess('Payout request submitted! Admin will process shortly.');
+                closePayoutModal();
+                // In production: await apiCall('/api/member/request-payout', 'POST', { amount });
+            } catch (error) {
+                console.error('Payout error:', error);
+                showError('Failed to submit payout request');
+            }
+        }
+
+        /**
+         * LOGOUT
+         */
+        function handleLogout() {
+            if (confirm('Are you sure you want to sign out?')) {
+                localStorage.removeItem('authToken');
+                window.location.href = 'signin.html';
+            }
+        }
+
+        /**
+         * MESSAGING
+         */
+        function showSuccess(message) {
+            const msg = document.getElementById('successMsg');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 4000);
+        }
+
+        function showError(message) {
+            const msg = document.getElementById('errorMsg');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 4000);
+        }
+
+        /**
+         * EVENT LISTENERS
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add event listeners for UTM form
+            document.getElementById('campaignName')?.addEventListener('input', (e) => {
+                if (e.target.value && document.getElementById('mediumSelect').value) {
+                    generateUTMPreview();
+                }
+            });
+
+            document.getElementById('mediumSelect')?.addEventListener('change', () => {
+                if (document.getElementById('campaignName').value) {
+                    generateUTMPreview();
+                }
+            });
+        });
+
+        function generateUTMPreview() {
+            const campaignName = document.getElementById('campaignName').value.trim();
+            const medium = document.getElementById('mediumSelect').value;
+
+            if (campaignName && medium && currentArticleForUTM) {
+                // Generate preview URL
+                const baseUrl = currentArticleForUTM.url || 'https://captionmood.com/articles';
+                const separator = baseUrl.includes('?') ? '&' : '?';
+                const utmUrl = `${baseUrl}${separator}utm_source=captionmood&utm_medium=${medium}&utm_campaign=${campaignName}`;
+                document.getElementById('utmUrl').textContent = utmUrl;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - TeamClickTracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .stats-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .stats-header {
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            color: white;
+        }
+
+        .stats-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .filters-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .filters-box input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .filters-box button {
+            padding: 10px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .filters-box button:hover {
+            background: #764ba2;
+        }
+
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto 30px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .summary-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .table-box {
+            background: white;
+            border-radius: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f9f9f9;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #666;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .back-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-container">
+        <div class="controls">
+            <button class="back-button" onclick="window.history.back()">← Back</button>
+            <div></div>
+        </div>
+
+        <div class="stats-header">
+            <h1>📊 Statistics</h1>
+            <p>Track your earnings and clicks over time</p>
+        </div>
+
+        <div class="filters-box">
+            <input type="date" id="startDate" placeholder="Start Date">
+            <input type="date" id="endDate" placeholder="End Date">
+            <button onclick="applyDateFilter()">🔍 Apply Filter</button>
+            <button onclick="loadStatistics()">🔄 Clear & Reload</button>
+        </div>
+
+        <div id="loadingIndicator" class="loading" style="display: none;">Loading statistics...</div>
+        <div id="noData" class="no-data" style="display: none;">No data available for the selected date range.</div>
+
+        <div id="summaryContainer" class="summary-box"></div>
+
+        <div class="table-box">
+            <div class="table-header">Daily Breakdown</div>
+            <div class="table-scroll">
+                <table id="statsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Clicks</th>
+                            <th>Revenue</th>
+                            <th>RPM</th>
+                            <th>Active Users</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStats = {};
+        let allStats = [];
+
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'signin.html';
+                return;
+            }
+            loadStatistics();
+        });
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('authToken');
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'signin.html';
+                    return { success: false };
+                }
+
+                return data;
+            } catch (error) {
+                console.error(`API Error (${endpoint}):`, error);
+                return { success: false };
+            }
+        }
+
+        async function loadStatistics() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('summaryContainer').innerHTML = '';
+            document.getElementById('tableBody').innerHTML = '';
+
+            const response = await apiCall('/api/member/statistics');
+
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+            if (response.success && response.statistics) {
+                currentStats = response.statistics;
+                allStats = response.statistics.dailyStats || [];
+                displaySummary();
+                displayTable();
+            } else {
+                document.getElementById('noData').style.display = 'block';
+            }
+        }
+
+        async function applyDateFilter() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('summaryContainer').innerHTML = '';
+            document.getElementById('tableBody').innerHTML = '';
+
+            const response = await apiCall(`/api/member/statistics?startDate=${startDate}&endDate=${endDate}`);
+
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+            if (response.success && response.statistics) {
+                currentStats = response.statistics;
+                allStats = response.statistics.dailyStats || [];
+                displaySummary();
+                displayTable();
+            } else {
+                document.getElementById('noData').style.display = 'block';
+            }
+        }
+
+        function displaySummary() {
+            const container = document.getElementById('summaryContainer');
+            container.innerHTML = `
+                <div class="summary-card">
+                    <h3>Total Earned</h3>
+                    <div class="value">$${currentStats.totalEarnings || 0}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Clicks</h3>
+                    <div class="value">${currentStats.totalClicks || 0}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Average RPM</h3>
+                    <div class="value">$${currentStats.averageRpm || 0}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Days Tracked</h3>
+                    <div class="value">${allStats.length}</div>
+                </div>
+            `;
+        }
+
+        function displayTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            if (allStats.length === 0) {
+                document.getElementById('noData').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('noData').style.display = 'none';
+
+            allStats.forEach((stat, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${stat.date}</td>
+                    <td>${stat.clicks || 0}</td>
+                    <td>$${stat.revenue || 0}</td>
+                    <td>$${stat.rpm || 0}</td>
+                    <td>${stat.activeUsers || 0}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TeamClickTracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 20px 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #ddd;
+            flex-wrap: wrap;
+            background: white;
+            padding: 0 20px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab-btn {
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .tab-btn.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-btn:hover {
+            color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-subtext {
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 8px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-header {
+            background: #f9f9f9;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-header h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px 20px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            border-bottom: 1px solid #eee;
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Hide Articles tab */
+        .tab-btn[onclick*="articles"] {
+            display: none;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 8px;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+        }
+
+        .btn-pay {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-pay:hover {
+            background: #138496;
+        }
+
+        .btn-view {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state h3 {
+            color: #999;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .empty-state p {
+            color: #ccc;
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .earnings-table {
+            width: 100%;
+        }
+
+        .earnings-table th:nth-child(2),
+        .earnings-table th:nth-child(3),
+        .earnings-table th:nth-child(4),
+        .earnings-table th:nth-child(5),
+        .earnings-table th:nth-child(6) {
+            text-align: right;
+        }
+
+        .earnings-table td:nth-child(2),
+        .earnings-table td:nth-child(3),
+        .earnings-table td:nth-child(4),
+        .earnings-table td:nth-child(5),
+        .earnings-table td:nth-child(6) {
+            text-align: right;
+        }
+
+        .member-row {
+            cursor: pointer;
+        }
+
+        .member-row:hover {
+            background: #f0f8ff !important;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .success-msg, .error-msg {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-msg {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .member-stats {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .member-stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .member-stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label-small {
+            color: #666;
+        }
+
+        .stat-value-bold {
+            font-weight: 700;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎛️ Admin Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Sign Out →</button>
+    </div>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div class="success-msg" id="successMsg"></div>
+        <div class="error-msg" id="errorMsg"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
+            <button class="tab-btn" onclick="switchTab('earnings')">💰 Earnings</button>
+            <button class="tab-btn" onclick="switchTab('members')">👥 Members</button>
+            <button class="tab-btn" onclick="switchTab('payments')">💳 Payments</button>
+            <button class="tab-btn" onclick="switchTab('articles')">📰 Articles</button>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Earnings</div>
+                    <div class="stat-value" id="totalEarnings">$0.00</div>
+                    <div class="stat-subtext">All Members Combined</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Members</div>
+                    <div class="stat-value" id="totalMembers">0</div>
+                    <div class="stat-subtext">Active Members</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pending Payouts</div>
+                    <div class="stat-value" id="pendingPayoutAmount">$0.00</div>
+                    <div class="stat-subtext">Awaiting Approval</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Paid Out</div>
+                    <div class="stat-value" id="totalPaidOut">$0.00</div>
+                    <div class="stat-subtext">Completed Payments</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Top Performing Members</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Total Earned</th>
+                            <th>Total Clicks</th>
+                            <th>Average RPM</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topMembers">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <h3>Loading...</h3>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- EARNINGS TAB -->
+        <div id="earnings" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Member Earnings Report</h3>
+                </div>
+                <table class="earnings-table">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Total Earned</th>
+                            <th>This Month</th>
+                            <th>This Week</th>
+                            <th>Total Clicks</th>
+                            <th>Average RPM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="earningsTable">
+                        <tr>
+                            <td colspan="6" class="loading">Loading earnings data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MEMBERS TAB -->
+        <div id="members" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>👤 All Members</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Total Earned</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersList">
+                        <tr>
+                            <td colspan="6" class="loading">Loading members...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>🔔 Pending Signups</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Signup Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingSignups">
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <h3>No pending signups</h3>
+                                <p>All requests have been reviewed</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PAYMENTS TAB -->
+        <div id="payments" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>💳 Pending Payout Requests</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Requested</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingPaymentsList">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <h3>No pending payouts</h3>
+                                <p>All payout requests have been processed</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>✅ Payment History</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentHistory">
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <h3>No payment history</h3>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ARTICLES TAB -->
+        <div id="articles" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>📰 Articles (Auto-Fetched Daily)</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Date Added</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articlesList">
+                        <tr>
+                            <td colspan="4" class="loading">Articles will be auto-fetched at 2:00 AM daily...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Details Modal -->
+    <div id="memberModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeMemberModal()">&times;</span>
+            <div class="modal-header">Member Details</div>
+            
+            <div id="memberDetails"></div>
+            
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn btn-view" onclick="closeMemberModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminData = { members: [], payments: [], earnings: {} };
+
+        // Check auth on load
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                console.error('❌ No token or user data found');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'admin') {
+                    console.error('❌ User is not an admin:', user.role);
+                    window.location.href = 'index.html';
+                    return;
+                }
+                console.log('✅ Admin verified, loading dashboard...');
+                loadDashboardData();
+                
+                // ✨ START AUTO-REFRESH FOR REAL-TIME UPDATES (30 seconds for admin)
+                startAutoRefresh();
+            } catch (e) {
+                console.error('❌ Error parsing user data:', e);
+                window.location.href = 'index.html';
+            }
+        });
+
+        /**
+         * AUTO-REFRESH - Update all admin data every 30 seconds (REAL-TIME)
+         */
+        async function startAutoRefresh() {
+            console.log('🔄 Starting admin auto-refresh (every 30 seconds)...');
+            
+            setInterval(async () => {
+                try {
+                    console.log('♻️ Auto-refreshing admin data...');
+                    await Promise.all([
+                        loadMembers(),
+                        loadPayments(),
+                        loadEarnings()
+                    ]);
+                    console.log(`✅ [${new Date().toLocaleTimeString()}] Admin data refreshed`);
+                } catch (error) {
+                    console.error('Auto-refresh error:', error);
+                }
+            }, 30000); // 30 seconds
+        }
+
+        /**
+         * API HELPER
+         */
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('authToken');
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+            };
+
+            if (body) options.body = JSON.stringify(body);
+
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+                if (response.status === 401) {
+                    window.location.href = 'index.html';
+                }
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                return { success: false };
+            }
+        }
+
+        // Load all dashboard data
+        async function loadDashboardData() {
+            console.log('📊 Loading admin dashboard data...');
+            
+            // Load all data in parallel
+            await Promise.all([
+                loadPendingRequests(),
+                loadMembers(),
+                loadPayments(),
+                loadEarnings()
+            ]);
+        }
+
+        // Load pending signup requests
+        async function loadPendingRequests() {
+            try {
+                const response = await apiCall('/api/admin/requests/pending');
+                console.log('📋 Pending Requests Response:', response);
+                
+                if (response.success && response.requests) {
+                    displayPendingRequests(response.requests);
+                } else {
+                    console.log('No pending requests');
+                    displayPendingRequests([]);
+                }
+            } catch (error) {
+                console.error('Error loading pending requests:', error);
+                displayPendingRequests([]);
+            }
+        }
+
+        // Display pending signup requests
+        function displayPendingRequests(requests) {
+            const tbody = document.getElementById('pendingSignups');
+            
+            if (!requests || requests.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <h3>No pending signups</h3>
+                            <p>All requests have been reviewed</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            requests.forEach(request => {
+                const createdDate = new Date(request.createdAt).toLocaleDateString();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${request.name || request.fullname || 'N/A'}</td>
+                    <td>${request.email}</td>
+                    <td>${createdDate}</td>
+                    <td>
+                        <button class="btn btn-primary btn-small" onclick="approvePendingMember('${request.id}', '${request.email}')">
+                            ✓ Approve
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-small" onclick="rejectPendingMember('${request.id}', '${request.email}')">
+                            ✕ Reject
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load members
+        async function loadMembers() {
+            const response = await apiCall('/api/admin/members');
+            if (response.success && response.members) {
+                adminData.members = response.members;
+                displayMembers();
+                updateMemberStats();
+            }
+        }
+
+        // Load payments
+        async function loadPayments() {
+            const response = await apiCall('/api/admin/payments');
+            if (response.success && response.payments) {
+                adminData.payments = response.payments;
+                displayPayments();
+                updatePaymentStats();
+            }
+        }
+
+        // Load earnings
+        async function loadEarnings() {
+            const response = await apiCall('/api/admin/earnings');
+            if (response.success && response.earnings) {
+                // Backend returns an array of earning records; UI expects per-member aggregates.
+                adminData.earnings = Array.isArray(response.earnings)
+                    ? buildEarningsSummaryMap(response.earnings)
+                    : (response.earnings || {});
+
+                displayEarnings();
+                updateEarningsStats();
+            }
+        }
+
+        function buildEarningsSummaryMap(earningRecords) {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const weekStart = new Date(now);
+            weekStart.setHours(0, 0, 0, 0);
+            weekStart.setDate(weekStart.getDate() - 6);
+
+            const byMember = {};
+
+            (earningRecords || []).forEach((rec) => {
+                const memberId = rec.memberId;
+                if (!memberId) return;
+
+                if (!byMember[memberId]) {
+                    byMember[memberId] = {
+                        memberId,
+                        memberName: rec.memberName || 'Unknown',
+                        totalEarned: 0,
+                        thisMonth: 0,
+                        thisWeek: 0,
+                        totalClicks: 0,
+                        averageRpm: 0
+                    };
+                }
+
+                const revenue = Number(rec.memberEarnings ?? rec.totalEarnings ?? rec.earnings ?? rec.revenue ?? 0);
+                const clicks = Number(rec.clicks || 0);
+
+                byMember[memberId].totalEarned += revenue;
+                byMember[memberId].totalClicks += clicks;
+                if (rec.memberName) byMember[memberId].memberName = rec.memberName;
+
+                const d = rec.date ? new Date(rec.date) : null;
+                if (d && !Number.isNaN(d.getTime())) {
+                    if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
+                        byMember[memberId].thisMonth += revenue;
+                    }
+                    if (d >= weekStart) {
+                        byMember[memberId].thisWeek += revenue;
+                    }
+                }
+            });
+
+            Object.values(byMember).forEach((m) => {
+                m.totalEarned = Math.round(m.totalEarned * 100) / 100;
+                m.thisMonth = Math.round(m.thisMonth * 100) / 100;
+                m.thisWeek = Math.round(m.thisWeek * 100) / 100;
+                m.averageRpm = m.totalClicks > 0
+                    ? Math.round(((m.totalEarned / m.totalClicks) * 1000) * 100) / 100
+                    : 0;
+            });
+
+            return byMember;
+        }
+
+        // Display members
+        function displayMembers() {
+            const tbody = document.getElementById('membersList');
+            tbody.innerHTML = '';
+            
+            adminData.members.forEach(member => {
+                const joined = member.joinedAt || member.joinDate || member.createdAt;
+                const joinedDate = joined ? new Date(joined) : null;
+                const joinedText = joinedDate && !Number.isNaN(joinedDate.getTime())
+                    ? joinedDate.toLocaleDateString()
+                    : '-';
+
+                const earned = Number(member.earnings ?? member.totalEarned ?? 0);
+
+                const row = document.createElement('tr');
+                row.className = 'member-row';
+                row.innerHTML = `
+                    <td>${member.name}</td>
+                    <td>${member.email}</td>
+                    <td><span class="status-badge status-${member.status}">${member.status.toUpperCase()}</span></td>
+                    <td>${joinedText}</td>
+                    <td>$${earned.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-view" onclick="viewMemberDetails('${member.id}')">View</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Display payments
+        function displayPayments() {
+            const pendingBody = document.getElementById('pendingPaymentsList');
+            const historyBody = document.getElementById('paymentHistory');
+            
+            const pending = adminData.payments.filter(p => p.status === 'pending' || p.status === 'approved');
+            const completed = adminData.payments.filter(p => p.status === 'paid' || p.status === 'rejected');
+            
+            // Pending
+            pendingBody.innerHTML = '';
+            if (pending.length === 0) {
+                pendingBody.innerHTML = '<tr><td colspan="5" class="empty-state"><h3>No pending payouts</h3></td></tr>';
+            } else {
+                pending.forEach(payment => {
+                    const requested = payment.requestedAt || payment.requestDate || payment.createdAt;
+                    const requestedDate = requested ? new Date(requested) : null;
+                    const requestedText = requestedDate && !Number.isNaN(requestedDate.getTime())
+                        ? requestedDate.toLocaleDateString()
+                        : '-';
+
+                    const amount = Number(payment.amount || 0);
+                    const notes = payment.notes || payment.rejectionReason || '-';
+
+                    const actions = payment.status === 'approved'
+                        ? `<button class="btn btn-pay" onclick="markMemberPayoutPaid('${payment.id}')">💸 Mark Paid</button>
+                           <button class="btn btn-reject" onclick="rejectMemberPayout('${payment.id}')">✕ Reject</button>`
+                        : `<button class="btn btn-pay" onclick="approveMemberPayout('${payment.id}')">✓ Approve</button>
+                           <button class="btn btn-reject" onclick="rejectMemberPayout('${payment.id}')">✕ Reject</button>`;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${payment.memberName}</td>
+                        <td>$${amount.toFixed(2)}</td>
+                        <td>${requestedText}</td>
+                        <td>${notes}</td>
+                        <td>
+                            ${actions}
+                        </td>
+                    `;
+                    pendingBody.appendChild(row);
+                });
+            }
+            
+            // History
+            historyBody.innerHTML = '';
+            if (completed.length === 0) {
+                historyBody.innerHTML = '<tr><td colspan="4" class="empty-state"><h3>No payment history</h3></td></tr>';
+            } else {
+                completed.forEach(payment => {
+                    const paid = payment.paidAt || payment.paidDate || payment.approvedAt || payment.requestedAt || payment.requestDate;
+                    const paidDate = paid ? new Date(paid) : null;
+                    const paidText = paidDate && !Number.isNaN(paidDate.getTime())
+                        ? paidDate.toLocaleDateString()
+                        : '-';
+
+                    const amount = Number(payment.amount || 0);
+                    const statusLabel = (payment.status || '').toUpperCase();
+                    const statusClass = payment.status === 'paid' ? 'status-approved' : 'status-rejected';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${payment.memberName}</td>
+                        <td>$${amount.toFixed(2)}</td>
+                        <td>${paidText}</td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel || 'COMPLETED'}</span></td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            }
+        }
+
+        // Display earnings
+        function displayEarnings() {
+            const tbody = document.getElementById('earningsTable');
+            tbody.innerHTML = '';
+            
+            Object.values(adminData.earnings).forEach(earning => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${earning.memberName}</td>
+                    <td>$${(earning.totalEarned || 0).toFixed(2)}</td>
+                    <td>$${(earning.thisMonth || 0).toFixed(2)}</td>
+                    <td>$${(earning.thisWeek || 0).toFixed(2)}</td>
+                    <td>${earning.totalClicks || 0}</td>
+                    <td>$${(earning.averageRpm || 0).toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update overview stats
+        function updateMemberStats() {
+            const approved = adminData.members.filter(m => m.status === 'approved').length;
+            document.getElementById('totalMembers').textContent = approved;
+        }
+
+        function updatePaymentStats() {
+            const pending = adminData.payments.filter(p => p.status === 'pending' || p.status === 'approved');
+            const completed = adminData.payments.filter(p => p.status === 'paid');
+            
+            const pendingTotal = pending.reduce((sum, p) => sum + (p.amount || 0), 0);
+            const completedTotal = completed.reduce((sum, p) => sum + (p.amount || 0), 0);
+            
+            document.getElementById('pendingPayoutAmount').textContent = `$${pendingTotal.toFixed(2)}`;
+            document.getElementById('totalPaidOut').textContent = `$${completedTotal.toFixed(2)}`;
+        }
+
+        function updateEarningsStats() {
+            let totalEarnings = 0;
+            Object.values(adminData.earnings).forEach(earning => {
+                totalEarnings += earning.totalEarned || 0;
+            });
+            document.getElementById('totalEarnings').textContent = `$${totalEarnings.toFixed(2)}`;
+        }
+
+        // View member details
+        function viewMemberDetails(memberId) {
+            const member = adminData.members.find(m => m.id === memberId);
+            if (!member) return;
+
+            const earning = adminData.earnings[memberId] || {};
+            const joined = member.joinedAt || member.joinDate || member.createdAt;
+            const joinedDate = joined ? new Date(joined) : null;
+            const joinedText = joinedDate && !Number.isNaN(joinedDate.getTime())
+                ? joinedDate.toLocaleDateString()
+                : '-';
+
+            const html = `
+                <div class="member-stats">
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">Email:</span>
+                        <span>${member.email}</span>
+                    </div>
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">Joined:</span>
+                        <span>${joinedText}</span>
+                    </div>
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">Status:</span>
+                        <span class="status-badge status-${member.status}">${member.status.toUpperCase()}</span>
+                    </div>
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">Total Earned:</span>
+                        <span class="stat-value-bold">$${(earning.totalEarned || 0).toFixed(2)}</span>
+                    </div>
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">Total Clicks:</span>
+                        <span>${earning.totalClicks || 0}</span>
+                    </div>
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">Average RPM:</span>
+                        <span class="stat-value-bold">$${(earning.averageRpm || 0).toFixed(2)}</span>
+                    </div>
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">This Month:</span>
+                        <span>$${(earning.thisMonth || 0).toFixed(2)}</span>
+                    </div>
+                    <div class="member-stat-item">
+                        <span class="stat-label-small">This Week:</span>
+                        <span>$${(earning.thisWeek || 0).toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('memberDetails').innerHTML = html;
+            document.getElementById('memberModal').classList.add('active');
+        }
+
+        function closeMemberModal() {
+            document.getElementById('memberModal').classList.remove('active');
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Approve payout
+        async function approveMemberPayout(paymentId) {
+            const response = await apiCall(`/api/admin/payments/${paymentId}/approve`, 'PUT');
+            if (response.success) {
+                showSuccess('✅ Payout approved!');
+                loadPayments();
+            } else {
+                showError('❌ Failed to approve payout');
+            }
+        }
+
+        // Mark payout as paid
+        async function markMemberPayoutPaid(paymentId) {
+            const response = await apiCall(`/api/admin/payments/${paymentId}/mark-paid`, 'PUT');
+            if (response.success) {
+                showSuccess('✅ Marked as PAID');
+                loadPayments();
+            } else {
+                showError('❌ Failed to mark as paid');
+            }
+        }
+
+        // Reject payout
+        async function rejectMemberPayout(paymentId) {
+            const response = await apiCall(`/api/admin/payments/${paymentId}/reject`, 'PUT');
+            if (response.success) {
+                showSuccess('✅ Payout rejected');
+                loadPayments();
+            } else {
+                showError('❌ Failed to reject payout');
+            }
+        }
+
+        // APPROVE pending member signup
+        async function approvePendingMember(requestId, email) {
+            console.log(`✅ Approving member: ${email}`);
+            
+            const response = await apiCall(`/api/admin/requests/approve/${requestId}`, 'POST');
+            
+            if (response.success) {
+                showSuccess(`✅ Member ${email} approved!`);
+                loadPendingRequests();
+                loadMembers();
+            } else {
+                showError(`❌ Failed to approve ${email}`);
+            }
+        }
+
+        // REJECT pending member signup
+        async function rejectPendingMember(requestId, email) {
+            const reason = prompt('Enter rejection reason (optional):');
+            
+            const response = await apiCall(`/api/admin/requests/reject/${requestId}`, 'POST', { reason });
+            
+            if (response.success) {
+                showSuccess(`✅ Member ${email} rejected`);
+                loadPendingRequests();
+            } else {
+                showError(`❌ Failed to reject ${email}`);
+            }
+        }
+
+        // Messages
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

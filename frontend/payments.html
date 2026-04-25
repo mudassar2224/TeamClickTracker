@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - TeamClickTracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .payments-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .payments-header {
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            color: white;
+        }
+
+        .payments-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .payout-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .payout-box h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+
+        .btn-back {
+            padding: 12px 30px;
+            background: #f0f0f0;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .payments-history {
+            background: white;
+            border-radius: 10px;
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .payments-history h2 {
+            padding: 20px;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .payment-item {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+
+        .payment-info {
+            flex: 1;
+        }
+
+        .payment-date {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .payment-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .payment-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-completed,
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .payment-notes {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .no-payments {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .controls {
+            max-width: 1000px;
+            margin: 0 auto 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payments-container">
+        <div class="controls">
+            <button class="btn-back" onclick="window.history.back()">← Back</button>
+        </div>
+
+        <div class="payments-header">
+            <h1>💰 Payments & Earnings</h1>
+            <p>Manage your payouts and track payment history</p>
+        </div>
+
+        <div id="summaryContainer" class="summary-box"></div>
+
+        <div class="payout-box">
+            <h2>📝 Request Payout</h2>
+            <div class="success-message" id="successMessage"></div>
+            <div class="error-message" id="errorMessage"></div>
+            
+            <form onsubmit="requestPayout(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="payoutAmount">Amount ($) *</label>
+                        <input type="number" id="payoutAmount" step="0.01" min="1" placeholder="Enter amount" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="availableAmount">Available Balance</label>
+                        <input type="text" id="availableAmount" disabled style="background: #f9f9f9;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="payoutNotes">Notes (Optional)</label>
+                    <textarea id="payoutNotes" placeholder="Add any notes for admin review..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">💸 Request Payout</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="payments-history">
+            <h2>📜 Payment History</h2>
+            <div id="loadingIndicator" class="loading" style="display: none;">Loading payment history...</div>
+            <div id="paymentsList"></div>
+        </div>
+    </div>
+
+    <script>
+        let paymentsSummary = {};
+        let paymentsList = [];
+
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'signin.html';
+                return;
+            }
+            loadPayments();
+        });
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('authToken');
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'signin.html';
+                    return { success: false };
+                }
+
+                return data;
+            } catch (error) {
+                console.error(`API Error (${endpoint}):`, error);
+                return { success: false };
+            }
+        }
+
+        async function loadPayments() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            const response = await apiCall('/api/member/payments');
+
+            document.getElementById('loadingIndicator').style.display = 'none';
+
+            if (response.success && response.payments) {
+                paymentsList = response.payments;
+                paymentsSummary = response.summary;
+                displaySummary();
+                displayPayments();
+            }
+        }
+
+        async function requestPayout(event) {
+            event.preventDefault();
+
+            const amount = parseFloat(document.getElementById('payoutAmount').value);
+            const notes = document.getElementById('payoutNotes').value;
+
+            if (amount > paymentsSummary.available) {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = '❌ Amount exceeds available balance';
+                return;
+            }
+
+            const response = await apiCall('/api/member/request-payout', 'POST', { amount, notes });
+
+            if (response.success) {
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('successMessage').textContent = '✅ Payout request submitted! Admin will review shortly.';
+                
+                document.getElementById('payoutAmount').value = '';
+                document.getElementById('payoutNotes').value = '';
+                
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                    loadPayments();
+                }, 3000);
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = '❌ ' + (response.error || 'Failed to request payout');
+            }
+        }
+
+        function displaySummary() {
+            const container = document.getElementById('summaryContainer');
+            container.innerHTML = `
+                <div class="summary-card">
+                    <h3>Total Earned</h3>
+                    <div class="value">$${(paymentsSummary.totalEarned || 0).toFixed(2)}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Paid</h3>
+                    <div class="value">$${(paymentsSummary.totalPaid || 0).toFixed(2)}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Pending</h3>
+                    <div class="value">$${(paymentsSummary.pending || 0).toFixed(2)}</div>
+                </div>
+                <div class="summary-card">
+                    <h3>Available Balance</h3>
+                    <div class="value">$${(paymentsSummary.available || 0).toFixed(2)}</div>
+                </div>
+            `;
+            
+            document.getElementById('availableAmount').value = '$' + (paymentsSummary.available || 0).toFixed(2);
+        }
+
+        function displayPayments() {
+            const container = document.getElementById('paymentsList');
+            
+            if (paymentsList.length === 0) {
+                container.innerHTML = '<div class="no-payments">No payment requests yet.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            paymentsList.forEach(payment => {
+                const date = new Date(payment.requestDate).toLocaleDateString();
+                const statusClass = `status-${payment.status}`;
+                
+                const div = document.createElement('div');
+                div.className = 'payment-item';
+                div.innerHTML = `
+                    <div class="payment-info">
+                        <div class="payment-date">Requested: ${date}</div>
+                        <div class="payment-amount">$${(payment.amount || 0).toFixed(2)}</div>
+                        <span class="payment-status ${statusClass}">${payment.status.toUpperCase()}</span>
+                        ${payment.notes ? `<div class="payment-notes">Note: ${payment.notes}</div>` : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>

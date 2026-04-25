@@ -1,0 +1,75 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "clicks",
+      "queryScope": "Collection",
+      "fields": [
+        {
+          "fieldPath": "utm_link_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clicks",
+      "queryScope": "Collection",
+      "fields": [
+        {
+          "fieldPath": "team_member_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clicks",
+      "queryScope": "Collection",
+      "fields": [
+        {
+          "fieldPath": "ip",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clicks",
+      "queryScope": "Collection",
+      "fields": [
+        {
+          "fieldPath": "device_fingerprint",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "clicks",
+      "queryScope": "Collection",
+      "fields": [
+        {
+          "fieldPath": "valid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

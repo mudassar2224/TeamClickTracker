@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+yarn.lock
+
+# Firebase
+.firebaserc
+serviceAccountKey.json
+firebase-debug.log
+firebase-functions-debug.log
+
+# Local service account keys (DO NOT COMMIT)
+config/google-analytics-key.json
+backend/functions/serviceAccountKey.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.vercel/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Runtime
+.cache/
+.temp/
+tmp/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.prettierignore
+.eslintignore
+*.pem
+*.key
+*.cert

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles - TeamClickTracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .articles-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .articles-header {
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            color: white;
+        }
+
+        .articles-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .filters-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .filters-box input,
+        .filters-box select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filters-box button {
+            padding: 10px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .filters-box button:hover {
+            background: #764ba2;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .article-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .article-content {
+            padding: 20px;
+        }
+
+        .article-category {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .article-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            min-height: 50px;
+        }
+
+        .article-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            min-height: 60px;
+            max-height: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .article-stats {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            font-size: 14px;
+        }
+
+        .article-stat {
+            flex: 1;
+            text-align: center;
+        }
+
+        .article-stat-value {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .article-stat-label {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .article-action {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .article-action button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #764ba2;
+        }
+
+        .btn-utm {
+            background: #f0f0f0;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-utm:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .no-articles {
+            text-align: center;
+            padding: 60px 40px;
+            background: white;
+            border-radius: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .no-articles h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .no-articles p {
+            margin: 15px 0;
+        }
+
+        .no-articles ul {
+            margin: 20px 0;
+        }
+
+        .no-articles li {
+            margin: 8px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .back-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="articles-container">
+        <div class="controls">
+            <button class="back-button" onclick="window.history.back()">← Back</button>
+            <div></div>
+        </div>
+
+        <div class="articles-header">
+            <h1>📰 Articles</h1>
+            <p>Browse and track all articles available for sharing</p>
+        </div>
+
+        <div class="filters-box">
+            <input type="text" id="searchInput" placeholder="Search articles..." onkeyup="filterArticles()">
+            <select id="categoryFilter" onchange="filterArticles()">
+                <option value="">All Categories</option>
+            </select>
+            <button onclick="loadArticles()">🔄 Refresh</button>
+        </div>
+
+        <div id="loadingIndicator" class="loading" style="display: none;">Loading articles...</div>
+        <div id="noArticles" class="no-articles" style="display: none;">No articles found. Check back soon!</div>
+        <div id="articlesGrid" class="articles-grid"></div>
+    </div>
+
+    <script>
+        let allArticles = [];
+        let allCategories = [];
+
+        // Check authentication on page load
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'signin.html';
+                return;
+            }
+            loadArticles();
+            loadCategories();
+        });
+
+        // API call helper
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const token = localStorage.getItem('authToken');
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'signin.html';
+                    return { success: false };
+                }
+
+                return data;
+            } catch (error) {
+                console.error(`API Error (${endpoint}):`, error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Load all articles
+        async function loadArticles() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('articlesGrid').innerHTML = '';
+
+            console.log('📰 Loading articles from API...');
+            const response = await apiCall('/api/member/articles');
+
+            console.log('📰 Articles response:', response);
+
+            if (response.success && response.articles && response.articles.length > 0) {
+                allArticles = response.articles;
+                document.getElementById('loadingIndicator').style.display = 'none';
+                displayArticles(allArticles);
+            } else {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                console.warn('⚠️ No articles loaded. Response:', response);
+                
+                // Show a helpful message
+                const noArticlesDiv = document.getElementById('noArticles');
+                noArticlesDiv.style.display = 'block';
+                noArticlesDiv.innerHTML = `
+                    <h2>📰 No Articles Available Yet</h2>
+                    <p>Articles will be automatically fetched from captionmood.com at <strong>2:00 AM daily</strong>.</p>
+                    <p>The first articles will appear after the web scraper runs tomorrow morning.</p>
+                    <hr style="margin: 20px 0; opacity: 0.3;">
+                    <p><strong>What you can do now:</strong></p>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li>✅ Create UTM links for when articles appear</li>
+                        <li>✅ View your profile and set up payment details</li>
+                        <li>✅ Request payouts</li>
+                    </ul>
+                `;
+            }
+        }
+
+        // Load categories
+        async function loadCategories() {
+            const response = await apiCall('/api/member/categories');
+            console.log('Categories response:', response);
+            
+            if (response.success && response.categories && response.categories.length > 0) {
+                allCategories = response.categories;
+                const categorySelect = document.getElementById('categoryFilter');
+                allCategories.forEach(cat => {
+                    // Use id as fallback if name is undefined
+                    const categoryName = cat.name || cat.id || 'Other';
+                    const categoryCount = cat.count || 0;
+                    
+                    const option = document.createElement('option');
+                    option.value = categoryName;
+                    option.textContent = `${categoryName} (${categoryCount})`;
+                    categorySelect.appendChild(option);
+                });
+                console.log(`✅ Loaded ${allCategories.length} categories`);
+            } else {
+                console.warn('⚠️ No categories found or API error:', response);
+            }
+        }
+
+        // Display articles
+        function displayArticles(articles) {
+            const grid = document.getElementById('articlesGrid');
+            grid.innerHTML = '';
+
+            if (articles.length === 0) {
+                document.getElementById('noArticles').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('noArticles').style.display = 'none';
+
+            articles.forEach(article => {
+                const safeUrl = String(article.url || '').replace(/'/g, "\\'");
+                const safeTitle = String(article.title || '').replace(/'/g, "\\'");
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                card.innerHTML = `
+                    <img src="${article.image || 'https://via.placeholder.com/300x200'}" alt="${article.title}" class="article-image">
+                    <div class="article-content">
+                        <span class="article-category">${article.category || 'General'}</span>
+                        <h3 class="article-title">${article.title}</h3>
+                        <p class="article-description">${article.description || 'No description available'}</p>
+                        
+                        <div class="article-stats">
+                            <div class="article-stat">
+                                <div class="article-stat-value">${article.clicks || 0}</div>
+                                <div class="article-stat-label">Your Clicks</div>
+                            </div>
+                            <div class="article-stat">
+                                <div class="article-stat-value">$${article.earnings || 0}</div>
+                                <div class="article-stat-label">Earnings</div>
+                            </div>
+                        </div>
+
+                        <div class="article-action">
+                            <button class="btn-view" onclick="window.open('${safeUrl}', '_blank')">📖 Read Article</button>
+                            <button class="btn-utm" onclick="createUTMForArticle('${article.id}', '${safeTitle}', '${safeUrl}')">🔗 Create UTM</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter articles
+        function filterArticles() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            const filtered = allArticles.filter(article => {
+                const matchesSearch = article.title.toLowerCase().includes(searchTerm) ||
+                                    article.description.toLowerCase().includes(searchTerm);
+                const matchesCategory = !categoryFilter || article.category === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+            displayArticles(filtered);
+        }
+
+        // Create UTM for article (placeholder - will navigate to UTM generator)
+        function createUTMForArticle(articleId, articleTitle, articleUrl) {
+            localStorage.setItem('selectedArticleId', articleId);
+            localStorage.setItem('selectedArticleTitle', articleTitle);
+            if (articleUrl) {
+                localStorage.setItem('selectedArticleUrl', articleUrl);
+            }
+            window.location.href = 'utm-generator.html?article=' + articleId;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "projects": {
+    "default": "utm-tracker-5802e"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "backend/functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-functions-debug.log"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "frontend",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "emulators": {
+    "firestore": {
+      "port": 8080,
+      "host": "localhost"
+    },
+    "functions": {
+      "port": 5001,
+      "host": "localhost"
+    },
+    "hosting": {
+      "port": 5000,
+      "host": "localhost"
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    }
+  }
+}
